@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Release.Name}}-unleash-enterprise-svc
+  labels:
+    app.kubernetes.io/name: {{.Release.Name}}
+    app.kubernetes.io/component: unleash-enterprise-service
+spec:
+  ports:
+    - port: 4242
+      targetPort: 4242
+      name: unleash-enterprise-port
+  selector:
+    app.kubernetes.io/name: "{{.Release.Name}}"
+    app.kubernetes.io/component: unleash-enterprise

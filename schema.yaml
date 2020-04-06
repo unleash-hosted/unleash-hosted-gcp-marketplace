@@ -1,0 +1,64 @@
+x-google-marketplace:
+  schemaVersion: v2
+
+  applicationApiVersion: v1beta1
+
+  publishedVersion: "$TAG"
+  publishedVersionMetadata:
+    releaseNote: >-
+      A regular update.
+    releaseTypes:
+      - Feature
+    recommended: false
+
+  managedUpdates:
+    kalmSupported: true
+
+  clusterConstraints:
+    resources:
+    - replicas: 1
+      requests:
+        cpu: 100m
+        memory: 100Mi
+    - replicas: 1
+      requests:
+        cpu: 100m
+        memory: 1048Mi
+
+  images:
+    '':
+      properties:
+        unleash.image.repo:
+          type: REPO_WITH_REGISTRY
+        unleash.image.tag:
+          type: TAG
+    postgresql:
+      properties:
+        postgresql.image:
+          type: FULL
+
+properties:
+  name:
+    type: string
+    x-google-marketplace:
+      type: NAME
+  namespace:
+    type: string
+    x-google-marketplace:
+      type: NAMESPACE
+  postgresql.db.password:
+    type: string
+    x-google-marketplace:
+      type: GENERATED_PASSWORD
+      generatedPassword:
+        length: 12
+  deployer.image:
+    type: string
+    x-google-marketplace:
+      type: DEPLOYER_IMAGE
+
+
+required:
+- name
+- namespace
+- postgresql.db.password

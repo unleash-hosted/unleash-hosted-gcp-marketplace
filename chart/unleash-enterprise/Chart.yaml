@@ -1,0 +1,6 @@
+name: unleash-enterprise
+description: Unleash-enterprise is feature flag & toggle service.
+version: 1.0.0
+home: https://www.unleash-hosted.com/
+sources:
+  - https://github.com/GoogleCloudPlatform/click-to-deploy/tree/master/k8s/unleash

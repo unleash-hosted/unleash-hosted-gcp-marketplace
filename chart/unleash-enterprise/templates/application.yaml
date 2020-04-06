@@ -1,0 +1,66 @@
+apiVersion: app.k8s.io/v1beta1
+kind: Application
+metadata:
+  name: "{{ .Release.Name }}"
+  annotations:
+    kubernetes-engine.cloud.google.com/icon: >-
+      data:image/png;base64,{{ .Files.Get "logo.png" | b64enc }}
+    marketplace.cloud.google.com/deploy-info: '{"partner_id": "click-to-deploy-containers", "product_id": "unleash-enterprise", "partner_name": "Bricks Software"}'
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+spec:
+  descriptor:
+    type: Unleash
+    version: "{{ .Values.unleash.image.tag }}"
+    description: |-
+      Unleash is an open source feature managment platform
+    maintainers:
+    - name: Unleash Hosted
+      url: https://www.unleash-hosted.com
+    links:
+    - description: 'User Guide: Google Click to Deploy unleash'
+      url: https://www.unleash-hosted.com
+    - description: 'unleash: Getting Started'
+      url: https://docs.unleash.org/latest/setup/get-started-2-minutes/
+    notes: |-
+      # Access Unleash-Enterprise
+
+      Unleash is exposed in a ClusterIP-only service `{{.Release.Name}}-unleash-svc`. To connect to
+      Unleash UI, you can either expose a public service endpoint or keep it private, but connect
+      from you local environment with `kubectl port-forward`
+
+      ```
+      kubectl port-forward \
+        --namespace {{ .Release.Namespace }} \
+        svc/{{.Release.Name}}-unleash-svc \
+        4242:4242
+      ```
+
+      Then, navigate to the [http://localhost:4242](http://localhost:4242) endpoint.
+  info:
+  - name: Temporary password for user postgres
+    type: Reference
+    valueFrom:
+      secretKeyRef:
+        key: password
+        name: {{ .Release.Name }}-secret
+  - name: Application Namespace
+    value: {{ .Release.Namespace }}
+  - name: Default login for web console
+    value: "admin"
+  - name: Default password for web console
+    value: "admin"
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: "{{ .Release.Name }}"
+  componentKinds:
+  - group: apps/v1
+    kind: StatefulSet
+  - group: v1
+    kind: PersistentVolumeClaim
+  - group: v1
+    kind: Secret
+  - group: v1
+    kind: Service
+  - group: v1
+    kind: ServiceAccount

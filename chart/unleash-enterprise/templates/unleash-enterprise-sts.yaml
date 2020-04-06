@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name}}-unleash-enterprise
+  labels: &UnleashLabels
+    app.kubernetes.io/component: unleash-enterprise
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels: *UnleashLabels
+  serviceName: {{ .Release.Name }}-unleash-enterprise-svc
+  template:
+    metadata:
+      labels: *UnleashLabels
+    spec:
+      initContainers:
+      - name: check-db-ready
+        image: {{ .Values.postgresql.image }}
+        command: ['sh', '-c',
+          'until pg_isready -h {{ .Release.Name }}-postgresql-service -p 5432;
+          do echo waiting for database; sleep 2; done;']  
+      containers:
+        - name: {{ .Release.Name}}-unleash-enterprise
+          image: "{{ .Values.unleash.image.repo }}:{{ .Values.unleash.image.tag }}"
+          resources:
+            requests:
+              cpu: 100m
+              memory: "512Mi"
+            limits:
+              memory: "728Mi"
+          imagePullPolicy: Always
+          env:
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: {{.Release.Name}}-secret
+            - name: DATABASE_URL
+              value: postgresql://{{.Values.postgresql.db.user}}:$(POSTGRESQL_PASSWORD)@{{ .Release.Name }}-postgresql-service:5432/{{.Values.postgresql.db.name}}
+          ports:
+            - containerPort: 4242
+              name: unleash-port
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 4242
+            initialDelaySeconds: 20
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4242
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            failureThreshold: 6
+          volumeMounts:
+          - mountPath: "/opt/unleash/extensions/"
+            name: {{ .Release.Name}}-ext
+        {{ if .Values.metrics.exporter.enabled }}
+        - name: prometheus-to-sd
+          image: {{ .Values.metrics.image }}
+          ports:
+            - name: profiler
+              containerPort: 6060
+          command:
+            - /monitor
+            - --source=unleash-enterprise:http://localhost:4242/internal-backstage/prometheus
+            - --stackdriver-prefix=custom.googleapis.com
+            - --pod-id=$(POD_NAME)
+            - --namespace-id=$(POD_NAMESPACE)
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+        {{ end }}
+      volumes:
+      - name: {{ .Release.Name}}-ext
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name}}-ext
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ .Release.Name}}-ext
+      labels: *UnleashLabels
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: standard
+      resources:
+        requests:
+          storage: 10Gi
