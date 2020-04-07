@@ -238,7 +238,11 @@ You can remove existing metric descriptors using
 
 # Scaling
 
-Unleash-enterprise currently doest not support scaling.
+Unleash-enterprise artifact is a stateless deploment, you may increse the number of replicas to handle more load.
+
+```shell
+kubectl scale deployment.v1.apps/$APP_INSTANCE_NAME-unleash-enterprise --replicas=3
+```
 
 # Backup and restore
 

@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: {{ .Release.Name}}-unleash-enterprise
   labels: &UnleashLabels
@@ -9,7 +9,7 @@ spec:
   replicas: 1
   selector:
     matchLabels: *UnleashLabels
-  serviceName: {{ .Release.Name }}-unleash-enterprise-svc
+  #serviceName: {{ .Release.Name }}-unleash-enterprise-svc
   template:
     metadata:
       labels: *UnleashLabels
@@ -54,9 +54,6 @@ spec:
             initialDelaySeconds: 20
             periodSeconds: 30
             failureThreshold: 6
-          volumeMounts:
-          - mountPath: "/opt/unleash/extensions/"
-            name: {{ .Release.Name}}-ext
         {{ if .Values.metrics.exporter.enabled }}
         - name: prometheus-to-sd
           image: {{ .Values.metrics.image }}
@@ -79,18 +76,3 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
         {{ end }}
-      volumes:
-      - name: {{ .Release.Name}}-ext
-        persistentVolumeClaim:
-          claimName: {{ .Release.Name}}-ext
-  volumeClaimTemplates:
-  - metadata:
-      name: {{ .Release.Name}}-ext
-      labels: *UnleashLabels
-    spec:
-      accessModes:
-      - ReadWriteOnce
-      storageClassName: standard
-      resources:
-        requests:
-          storage: 10Gi

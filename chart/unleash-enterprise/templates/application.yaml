@@ -56,6 +56,8 @@ spec:
   componentKinds:
   - group: apps/v1
     kind: StatefulSet
+  - group: apps/v1
+    kind: Deployment
   - group: v1
     kind: PersistentVolumeClaim
   - group: v1
