@@ -60,7 +60,7 @@ you want to use, this step is optional.
 
 ```shell
 export CLUSTER=unleash-cluster
-export ZONE=us-west1-a
+export ZONE=europe-west1-c
 
 gcloud container clusters create "$CLUSTER" --zone "$ZONE"
 ```
