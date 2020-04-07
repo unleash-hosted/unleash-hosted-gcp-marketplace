@@ -1,0 +1,21 @@
+applicationApiVersion: v1beta1
+properties:
+  name:
+    type: string
+    x-google-marketplace:
+      type: NAME
+  namespace:
+    type: string
+    x-google-marketplace:
+      type: NAMESPACE
+  postgresql.db.password:
+    type: string
+    x-google-marketplace:
+      type: GENERATED_PASSWORD
+      default: ZTVMN2dyc0hDcGl4
+      generatedPassword:
+        length: 12
+  deployer.image:
+    type: string
+    x-google-marketplace:
+      type: DEPLOYER_IMAGE
