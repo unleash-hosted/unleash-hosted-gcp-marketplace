@@ -3,7 +3,7 @@ unleash:
     repo: gcr.io/bricks-software-public/unleash-enterprise
     tag: latest
 postgresql:
-  image: gcr.io/bricks-software-public/postgresql11:latest
+  image: gcr.io/bricks-software-public/unleash-enterprise/postgresql:latest
   exporter:
     image: null
   db:
@@ -11,7 +11,7 @@ postgresql:
     name: unleash
     user: unleash
 metrics:
-  image: gcr.io/bricks-software-public/prometheus-to-sd:0.9.2
+  image: gcr.io/bricks-software-public/unleash-enterprise/prometheus-to-sd:latest
   exporter:
     enabled: flalse
 deployer:
