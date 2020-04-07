@@ -131,8 +131,8 @@ Configure the container images:
 
 ```shell
 export IMAGE_UNLEASH="gcr.io/bricks-software-public/unleash-enterprise"
-export IMAGE_POSTGRESQL="gcr.io/bricks-software-public/postgresql11:latest"
-export IMAGE_METRICS_EXPORTER="gcr.io/bricks-software-public/prometheus-to-sd:0.9.2"
+export IMAGE_POSTGRESQL="gcr.io/bricks-software-public/unleash-enterprise/postgresql:latest"
+export IMAGE_METRICS_EXPORTER="gcr.io/bricks-software-public/unleash-enterprise/prometheus-to-sd:latest"
 ```
 
 Generate random password for PostgreSQL:
