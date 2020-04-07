@@ -9,7 +9,6 @@ spec:
   replicas: 1
   selector:
     matchLabels: *UnleashLabels
-  #serviceName: {{ .Release.Name }}-unleash-enterprise-svc
   template:
     metadata:
       labels: *UnleashLabels
