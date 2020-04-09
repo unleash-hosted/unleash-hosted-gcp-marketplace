@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{.Release.Name}}-unleash-enterprise-svc
   labels:
-    app.kubernetes.io/name: {{.Release.Name}}
+    app.kubernetes.io/name: "{{.Release.Name}}"
     app.kubernetes.io/component: unleash-enterprise-service
 spec:
   ports:
