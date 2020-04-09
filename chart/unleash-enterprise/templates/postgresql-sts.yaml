@@ -15,6 +15,10 @@ spec:
       labels: *PostgreSQLLabels
     spec:
       serviceAccountName: {{ .Release.Name }}-serviceaccount
+      volumes:	
+      - name: {{ .Release.Name }}-postgresql-pvc	
+        persistentVolumeClaim:	
+          claimName: {{ .Release.Name }}-postgresql-pvc
       containers:
       - name: postgresql-server
         image: {{ .Values.postgresql.image }}
@@ -47,14 +51,3 @@ spec:
               fieldPath: status.podIP
         - name: "HOST"
           value: "{{ .Release.Name }}-postgresql-service"
-  volumeClaimTemplates:
-  - metadata:
-      name: {{ .Release.Name }}-postgresql-pvc
-      labels: *PostgreSQLLabels
-    spec:
-      accessModes:
-      - ReadWriteOnce
-      storageClassName: standard
-      resources:
-        requests:
-          storage: 10Gi
