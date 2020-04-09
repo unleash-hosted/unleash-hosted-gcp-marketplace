@@ -30,13 +30,13 @@ spec:
               memory: "728Mi"
           imagePullPolicy: Always
           env:
-            - name: POSTGRESQL_PASSWORD
+            - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   key: password
                   name: {{.Release.Name}}-secret
             - name: DATABASE_URL
-              value: postgresql://{{.Values.postgresql.db.user}}:$(POSTGRESQL_PASSWORD)@{{ .Release.Name }}-postgresql-service:5432/{{.Values.postgresql.db.name}}
+              value: postgresql://{{.Values.postgresql.db.user}}:$(DATABASE_PASSWORD)@{{.Release.Name}}-postgresql-service:5432/{{.Values.postgresql.db.name}}
           ports:
             - containerPort: 4242
               name: unleash-port
