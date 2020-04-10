@@ -17,7 +17,7 @@ spec:
       - name: check-db-ready
         image: {{ .Values.postgresql.image }}
         command: ['sh', '-c',
-          'until pg_isready -h {{ .Release.Name }}-postgresql-service -p 5432;
+          'until pg_isready -h {{ .Release.Name }}-postgresql-service -p 5432 --username=$DATABASE_USER;
           do echo waiting for database; sleep 2; done;']  
       containers:
         - name: {{ .Release.Name}}-unleash-enterprise
@@ -35,6 +35,8 @@ spec:
                 secretKeyRef:
                   key: password
                   name: {{.Release.Name}}-secret
+            - name: DATABASE_USER
+              value: {{.Values.postgresql.db.user}}
             - name: DATABASE_URL
               value: postgres://{{.Values.postgresql.db.user}}:$(DATABASE_PASSWORD)@{{.Release.Name}}-postgresql-service:5432/{{.Values.postgresql.db.name}}
           ports:
