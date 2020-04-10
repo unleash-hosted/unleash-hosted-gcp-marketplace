@@ -138,7 +138,7 @@ export IMAGE_METRICS_EXPORTER="gcr.io/bricks-software-public/unleash-enterprise/
 Generate random password for PostgreSQL:
 
 ```shell
-export POSTGRESQL_DB_PASSWORD=$(openssl rand 9 | openssl base64 -A | openssl base64)
+export POSTGRESQL_DB_PASSWORD=$(openssl rand -base64 32 | tr -cd '[:alpha:]\n' | head -c 12 | openssl base64)
 ```
 
 Enable Stackdriver Metrics Exporter:

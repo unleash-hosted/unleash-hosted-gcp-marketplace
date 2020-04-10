@@ -36,7 +36,7 @@ spec:
                   key: password
                   name: {{.Release.Name}}-secret
             - name: DATABASE_URL
-              value: postgresql://{{.Values.postgresql.db.user}}:$(DATABASE_PASSWORD)@{{.Release.Name}}-postgresql-service:5432/{{.Values.postgresql.db.name}}
+              value: postgres://{{.Values.postgresql.db.user}}:$(DATABASE_PASSWORD)@{{.Release.Name}}-postgresql-service:5432/{{.Values.postgresql.db.name}}
           ports:
             - containerPort: 4242
               name: unleash-port
