@@ -13,6 +13,10 @@ spec:
     metadata:
       labels: *UnleashLabels
     spec:
+      volumes:
+          - name: ubbagent-config
+            configMap:
+              name: ubbagent-config
       initContainers:
       - name: check-db-ready
         image: {{ .Values.postgresql.image }}
@@ -55,6 +59,26 @@ spec:
             initialDelaySeconds: 20
             periodSeconds: 30
             failureThreshold: 6
+        - name: ubbagent
+          image: {{ .Values.ubbagent.image }}
+          env:
+          - name: AGENT_CONFIG_FILE
+            value: "/etc/ubbagent/config.yaml"
+          - name: AGENT_LOCAL_PORT
+            value: "4567"
+          - name: AGENT_ENCODED_KEY
+            valueFrom:
+              secretKeyRef:
+                name: $reportingSecret
+                key: reporting-key
+          - name: AGENT_CONSUMER_ID
+            valueFrom:
+              secretKeyRef:
+                name: $reportingSecret
+                key: consumer-id
+          volumeMounts:
+          - name: ubbagent-config
+            mountPath: /etc/ubbagent
         {{ if .Values.metrics.exporter.enabled }}
         - name: prometheus-to-sd
           image: {{ .Values.metrics.image }}

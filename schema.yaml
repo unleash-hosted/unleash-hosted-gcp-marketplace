@@ -38,6 +38,10 @@ x-google-marketplace:
           type: FULL
 
 properties:
+  reportingSecret:
+    type: string
+    x-google-marketplace:
+      type: REPORTING_SECRET
   name:
     type: string
     x-google-marketplace:
