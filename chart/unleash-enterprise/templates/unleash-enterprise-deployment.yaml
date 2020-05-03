@@ -69,12 +69,12 @@ spec:
           - name: AGENT_ENCODED_KEY
             valueFrom:
               secretKeyRef:
-                name: $reportingSecret
+                name: {{ .Release.Name }}-reporting-secret
                 key: reporting-key
           - name: AGENT_CONSUMER_ID
             valueFrom:
               secretKeyRef:
-                name: $reportingSecret
+                name: {{ .Release.Name }}-reporting-secret
                 key: consumer-id
           volumeMounts:
           - name: ubbagent-config
