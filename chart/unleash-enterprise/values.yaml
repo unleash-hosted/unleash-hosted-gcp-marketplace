@@ -19,3 +19,4 @@ deployer:
 ubbagent:
   name: unleash-ubbagent
   image: gcr.io/bricks-software-public/unleash-enterprise/ubbagent
+reportingSecret: null
