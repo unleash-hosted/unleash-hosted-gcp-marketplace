@@ -36,6 +36,14 @@ x-google-marketplace:
       properties:
         postgresql.image:
           type: FULL
+    prometheus-to-sd:
+      properties:
+        metrics.image:
+          type: FULL
+    ubbagent:
+      properties:
+        ubbagent.image:
+          type: FULL
 
 properties:
   reportingSecret:

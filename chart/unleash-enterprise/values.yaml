@@ -18,5 +18,5 @@ deployer:
   image: null
 ubbagent:
   name: unleash-ubbagent
-  image: gcr.io/bricks-software-public/unleash-enterprise/ubbagent
+  image: gcr.io/bricks-software-public/unleash-enterprise/ubbagent:latest
 reportingSecret: null
