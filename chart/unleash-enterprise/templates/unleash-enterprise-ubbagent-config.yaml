@@ -62,7 +62,7 @@ data:
         identity: gcp
         # The service name is unique to your application and will be
         # provided during onboarding.
-        serviceName: my-application.mp-my-company.appspot.com
+        serviceName: unleash-enterprise.mp-bricks-software-public.appspot.com
         consumerId: $AGENT_CONSUMER_ID  # From the reporting secret.
       
 
