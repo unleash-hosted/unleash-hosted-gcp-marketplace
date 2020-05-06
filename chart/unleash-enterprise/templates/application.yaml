@@ -32,7 +32,7 @@ spec:
       ```
       kubectl port-forward \
         --namespace {{ .Release.Namespace }} \
-        svc/{{.Release.Name}}-unleash-svc \
+        svc/{{.Release.Name}}-unleash-enterprise-svc \
         4242:4242
       ```
 
