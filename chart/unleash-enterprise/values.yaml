@@ -2,6 +2,7 @@ unleash:
   image:
     repo: gcr.io/bricks-software-public/unleash-enterprise
     tag: latest
+
 postgresql:
   image: gcr.io/bricks-software-public/unleash-enterprise/postgresql:latest
   exporter:
@@ -10,13 +11,18 @@ postgresql:
     password: null
     name: unleash
     user: unleash
+
 metrics:
   image: gcr.io/bricks-software-public/unleash-enterprise/prometheus-to-sd:latest
   exporter:
     enabled: flalse
+
 deployer:
   image: null
+
 ubbagent:
   name: unleash-ubbagent
   image: gcr.io/bricks-software-public/unleash-enterprise/ubbagent:latest
 reportingSecret: null
+
+enablePublicService: false

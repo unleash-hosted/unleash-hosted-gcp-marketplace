@@ -3,7 +3,7 @@ x-google-marketplace:
 
   applicationApiVersion: v1beta1
 
-  publishedVersion: "3.2.30"
+  publishedVersion: "$TAG"
   publishedVersionMetadata:
     releaseNote: >-
       A regular update.
@@ -68,9 +68,20 @@ properties:
     type: string
     x-google-marketplace:
       type: DEPLOYER_IMAGE
-
+  enablePublicService:
+    type: boolean
+    title: Enable public IP access
+    description: Set the Unleash-enterprise Service type to NodePort
+    default: false
+  metrics.exporter.enabled:
+    type: boolean
+    title: Enable Stackdriver Metrics Exporter
+    description: Your GCP project should have Stackdriver enabled. For non-GCP clusters, export of metrics to Stackdriver is not supported yet
+    default: false
 
 required:
 - name
 - namespace
 - postgresql.db.password
+- metrics.exporter.enabled
+- enablePublicService

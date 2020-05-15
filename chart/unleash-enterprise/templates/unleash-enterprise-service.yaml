@@ -13,3 +13,8 @@ spec:
   selector:
     app.kubernetes.io/name: "{{.Release.Name}}"
     app.kubernetes.io/component: unleash-enterprise
+  {{- if .Values.enablePublicService }}
+  type: NodePort
+  {{- else }}
+  type: ClusterIP
+  {{- end }}
