@@ -32,7 +32,7 @@ data:
       aggregation:
         bufferSeconds: 60
 
-    - name: instance_time
+    - name: unleash-enterprise.mp-bricks-software-public.appspot.com/cost_per_hour
       type: int
       endpoints:
       - name: on_disk
@@ -74,7 +74,7 @@ data:
     sources:
     - name: instance_time_heartbeat
       heartbeat:
-        metric: instance_time
+        metric: unleash-enterprise.mp-bricks-software-public.appspot.com/cost_per_hour
         intervalSeconds: 3600
         value:
           int64Value: 1
