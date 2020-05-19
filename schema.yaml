@@ -70,7 +70,7 @@ properties:
       type: DEPLOYER_IMAGE
   enablePublicService:
     type: boolean
-    title: Enable public IP access
+    title: Use NodePort instead of ClusterIP
     description: Set the Unleash-enterprise Service type to NodePort
     default: false
   metrics.exporter.enabled:

@@ -18,14 +18,14 @@ spec:
     - name: Unleash Hosted
       url: https://www.unleash-hosted.com
     links:
-    - description: 'User Guide: Google Click to Deploy unleash'
-      url: https://www.unleash-hosted.com
-    - description: 'unleash: Getting Started'
-      url: https://docs.unleash.org/latest/setup/get-started-2-minutes/
+    - description: 'User Guide: Google Click to Deploy Unleash'
+      url: https://www.unleash-hosted.com/google-cloud-marketplace
+    - description: 'User Guide: Getting Started with Unleash'
+      url: https://www.unleash-hosted.com/docs
     notes: |-
       # Access Unleash-Enterprise
 
-      Unleash is exposed in a ClusterIP-only service `{{.Release.Name}}-unleash-svc`. To connect to
+      Unleash is by default exposed in a ClusterIP-only service `{{.Release.Name}}-unleash-svc`. To connect to
       Unleash UI, you can either expose a public service endpoint or keep it private, but connect
       from you local environment with `kubectl port-forward`
 
