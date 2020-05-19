@@ -17,23 +17,11 @@ data:
     # Metric names should match verbatim the identifiers created
     # during pricing setup.
     metrics:
-    - name: requests
-      type: int
-
-      # The endpoints section of a metric defines which endpoints the
-      # metric data is sent to.
-      endpoints:
-      - name: on_disk
-      - name: servicecontrol
-
-      # The aggregation section indicates that reports that the agent
-      # receives for this metric should be aggregated for a specified
-      # period of time prior to being sent to the reporting endpoint.
-      aggregation:
-        bufferSeconds: 60
-
-    - name: unleash-enterprise.mp-bricks-software-public.appspot.com/cost_per_hour
-      type: int
+    - name: cost_per_hour
+      metric_kind: DELTA
+      value_type: INT64
+      unit: h
+    
       endpoints:
       - name: on_disk
       - name: servicecontrol
@@ -74,7 +62,7 @@ data:
     sources:
     - name: instance_time_heartbeat
       heartbeat:
-        metric: unleash-enterprise.mp-bricks-software-public.appspot.com/cost_per_hour
+        metric: cost_per_hour
         intervalSeconds: 3600
         value:
           int64Value: 1
