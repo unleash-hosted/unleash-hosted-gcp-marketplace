@@ -117,14 +117,14 @@ It is advised to use stable image reference which you can find on
 Example:
 
 ```shell
-export TAG="3.2.30"
+export TAG="3.3.5"
 ```
 
 Alternatively you can use short tag which points to the latest image for selected version.
 > Warning: this tag is not stable and referenced image might change over time.
 
 ```shell
-export TAG="3"
+export TAG="3.3"
 ```
 
 Configure the container images:
