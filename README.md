@@ -113,7 +113,7 @@ export NAMESPACE=default
 Set up the image tag:
 
 It is advised to use stable image reference which you can find on
-[Marketplace Container Registry](https://marketplace.gcr.io/bricks-software/unleash-enterprise).
+[Marketplace Container Registry](marketplace.gcr.io/bricks-software-public/unleash-enterprise).
 Example:
 
 ```shell
@@ -130,9 +130,9 @@ export TAG="3.3"
 Configure the container images:
 
 ```shell
-export IMAGE_UNLEASH="gcr.io/bricks-software-public/unleash-enterprise"
-export IMAGE_POSTGRESQL="gcr.io/bricks-software-public/unleash-enterprise/postgresql:latest"
-export IMAGE_METRICS_EXPORTER="gcr.io/bricks-software-public/unleash-enterprise/prometheus-to-sd:latest"
+export IMAGE_UNLEASH="marketplace.gcr.io/bricks-software-public/unleash-enterprise"
+export IMAGE_POSTGRESQL="marketplace.gcr.io/bricks-software-public/unleash-enterprise/postgresql:latest"
+export IMAGE_METRICS_EXPORTER="marketplace.gcr.io/bricks-software-public/unleash-enterprise/prometheus-to-sd:latest"
 ```
 
 Generate random password for PostgreSQL:
