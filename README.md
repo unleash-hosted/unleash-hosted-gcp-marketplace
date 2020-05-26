@@ -1,7 +1,6 @@
 # Overview
 
-Unleash-entprise is an enterprise feature flag servce. It adds additional funcationality 
-on top of the open source edition of Unleash. Unleash gives you a great overview of all feature toggles across all your applications and services. It comes with official client implementations for Java, Node.js, Go, Ruby, Python and .Net.
+Unleash Enterprise is a feature flag service for the enterprise. It adds additional functionality on top of the open source edition of Unleash. Unleash gives you a great overview of all feature toggles across all your applications and services. It comes with official client implementations for Java, Node.js, Go, Ruby, Python, .Net and Rust.
 
 For more information on Unleash, see the [Unleash-hosted website](https://www.unleash-hosted.com/).
 
