@@ -36,6 +36,11 @@ You can use [Google Cloud Shell](https://cloud.google.com/shell/) or a local wor
 
 ### Prerequisites
 
+#### Get a license key
+
+In the google marketplace, under the unleash configuration. Choose "deploy via commandline" and generate and download your license key. This will be used to configure the license secret in your kubernetes cluster.
+[img](./serviceKey.png)
+
 #### Set up command line tools
 
 You'll need the following tools in your environment. If you are using Cloud Shell, these tools are installed in your environment by default.
@@ -48,6 +53,7 @@ You'll need the following tools in your environment. If you are using Cloud Shel
 - [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
 Configure `gcloud` as a Docker credential helper:
+
 ```shell
 gcloud auth configure-docker
 ```
@@ -97,6 +103,28 @@ The Application resource is defined by the
 
 ### Install the application
 
+#### Insert license key secret into kubernetes cluster
+
+Find your downloaded license.yaml, which you should have generated when you configured unleash through the google cloud platform and run the following command to insert the license key into the cluster:
+
+```
+kubectl apply -f license.yaml
+```
+
+After you have installed your license key run the following command to retrieve the secret name:
+
+```
+kubectl get secrets
+// output
+NAME                                   TYPE                                  DATA   AGE
+unleash-enterprise-1-license           Opaque                                3      31m
+```
+
+Retrieve the secret name and set the environment variable in your shell enviroment:
+
+```
+export LICENSE_SECRET_NAME=unleash-enterprise-1-license
+```
 
 #### Configure the application with environment variables
 
@@ -116,10 +144,11 @@ It is advised to use stable image reference which you can find on
 Example:
 
 ```shell
-export TAG="3.3.5"
+export TAG="3.5.3"
 ```
 
 Alternatively you can use short tag which points to the latest image for selected version.
+
 > Warning: this tag is not stable and referenced image might change over time.
 
 ```shell
@@ -130,8 +159,9 @@ Configure the container images:
 
 ```shell
 export IMAGE_UNLEASH="marketplace.gcr.io/bricks-software-public/unleash-enterprise"
-export IMAGE_POSTGRESQL="marketplace.gcr.io/bricks-software-public/unleash-enterprise/postgresql:latest"
-export IMAGE_METRICS_EXPORTER="marketplace.gcr.io/bricks-software-public/unleash-enterprise/prometheus-to-sd:latest"
+export IMAGE_POSTGRESQL="marketplace.gcr.io/bricks-software-public/unleash-enterprise/postgresql:$TAG"
+export IMAGE_METRICS_EXPORTER="marketplace.gcr.io/bricks-software-public/unleash-enterprise/prometheus-to-sd:$TAG"
+export IMAGE_UBB_AGENT="marketplace.gcr.io/bricks-software-public/unleash-enterprise/ubbagent:$TAG"
 ```
 
 Generate random password for PostgreSQL:
@@ -162,6 +192,8 @@ helm template "$APP_INSTANCE_NAME" chart/unleash-enterprise \
   --set unleash.image.tag="$TAG" \
   --set postgresql.image="$IMAGE_POSTGRESQL" \
   --set postgresql.db.password="$POSTGRESQL_DB_PASSWORD" \
+  --set reportingSecret="$LICENSE_SECRET_NAME" \
+  --set ubbagent.image="$IMAGE_UBB_AGENT" \
   --set metrics.image="$IMAGE_METRICS_EXPORTER" \
   --set metrics.exporter.enabled="$METRICS_EXPORTER_ENABLED" \
   > "${APP_INSTANCE_NAME}_manifest.yaml"
@@ -196,7 +228,6 @@ kubectl port-forward --namespace $NAMESPACE svc/$APP_INSTANCE_NAME-unleash-enter
 Then, open [http://localhost:4242/](http://localhost:4242/).
 
 # Application metrics
-
 
 ## Unleash metrics
 
@@ -246,13 +277,13 @@ kubectl scale deployment.v1.apps/$APP_INSTANCE_NAME-unleash-enterprise --replica
 # Backup and restore
 
 There are 2 core components in the Unleash-enterprise platform:
+
 - Unleash-enterpruie Server, which containts these parts
   - A web server for the Uneash UI, where you configure your feature toggles
   - A api used by application to query feature toogle configuration
 - The Unleash database
 
 To back up the application, you must back up the database.
-
 
 ## Backing up PostgreSQL
 
@@ -284,60 +315,61 @@ Before you restore the PostgreSQL database, we recommend closing all incoming co
 
 1. The following command blocks incoming database connections:
 
-    ```shell
-    kubectl --namespace $NAMESPACE exec -t \
-      $(kubectl -n$NAMESPACE get pod -oname | \
-         sed -n /\\/$APP_INSTANCE_NAME-postgresql/s.pods\\?/..p) \
-      -c postgresql-server \
-      -- psql -U postgres -c "update pg_database set datallowconn = false where datname = 'unleash';"
-    ```
+   ```shell
+   kubectl --namespace $NAMESPACE exec -t \
+     $(kubectl -n$NAMESPACE get pod -oname | \
+        sed -n /\\/$APP_INSTANCE_NAME-postgresql/s.pods\\?/..p) \
+     -c postgresql-server \
+     -- psql -U postgres -c "update pg_database set datallowconn = false where datname = 'unleash';"
+   ```
 
 1. To ensure data consistency, use this command to drop all active connections:
 
-    ```shell
-    kubectl --namespace $NAMESPACE exec -t \
-      $(kubectl -n$NAMESPACE get pod -oname | \
-         sed -n /\\/$APP_INSTANCE_NAME-postgresql/s.pods\\?/..p) \
-      -c postgresql-server \
-      -- psql -U postgres -c "select pg_terminate_backend(pid) from pg_stat_activity where datname='unleash';"
-    ```
+   ```shell
+   kubectl --namespace $NAMESPACE exec -t \
+     $(kubectl -n$NAMESPACE get pod -oname | \
+        sed -n /\\/$APP_INSTANCE_NAME-postgresql/s.pods\\?/..p) \
+     -c postgresql-server \
+     -- psql -U postgres -c "select pg_terminate_backend(pid) from pg_stat_activity where datname='unleash';"
+   ```
+
 ### Restore the database
 
 1. Use this command to restore your data from `postgresql/backup.sql`:
 
-    ```shell
-    cat postgresql/backup.sql | kubectl --namespace $NAMESPACE exec -i \
-      $(kubectl -n$NAMESPACE get pod -oname | \
-        sed -n /\\/$APP_INSTANCE_NAME-postgresql/s.pods\\?/..p) \
-      -c postgresql-server \
-      -- psql -U postgres
-    ```
+   ```shell
+   cat postgresql/backup.sql | kubectl --namespace $NAMESPACE exec -i \
+     $(kubectl -n$NAMESPACE get pod -oname | \
+       sed -n /\\/$APP_INSTANCE_NAME-postgresql/s.pods\\?/..p) \
+     -c postgresql-server \
+     -- psql -U postgres
+   ```
 
 1. Use the following command to copy data files from your local folder to `$UNLEASH_HOME/data` in the Unleash-enterprise Pod:
 
-    ```shell
-    kubectl --namespace $NAMESPACE cp data $(kubectl -n$NAMESPACE get pod -oname | \
-      sed -n /\\/$APP_INSTANCE_NAME-unleash/s.pods\\?/..p):/opt/unleash/data
-    ```
+   ```shell
+   kubectl --namespace $NAMESPACE cp data $(kubectl -n$NAMESPACE get pod -oname | \
+     sed -n /\\/$APP_INSTANCE_NAME-unleash/s.pods\\?/..p):/opt/unleash/data
+   ```
 
 1. Delete the unneeded Unleash application data:
 
-    ```shell
-    kubectl --namespace $NAMESPACE exec -i \
-      $(kubectl -n$NAMESPACE get pod -oname | \
-        sed -n /\\/$APP_INSTANCE_NAME-unleash/s.pods\\?/..p) \
-      -- bash -c "rm -rf /opt/unleash/data/es5/* "
-    ```
+   ```shell
+   kubectl --namespace $NAMESPACE exec -i \
+     $(kubectl -n$NAMESPACE get pod -oname | \
+       sed -n /\\/$APP_INSTANCE_NAME-unleash/s.pods\\?/..p) \
+     -- bash -c "rm -rf /opt/unleash/data/es5/* "
+   ```
 
 1. Enable incoming connections for the `unleash` database schema:
 
-    ```shell
-    kubectl --namespace $NAMESPACE exec -t \
-      $(kubectl -n$NAMESPACE get pod -oname | \
-        sed -n /\\/$APP_INSTANCE_NAME-postgresql/s.pods\\?/..p) \
-      -c postgresql-server \
-      -- psql -U postgres -c "update pg_database set datallowconn = true where datname = 'unleash';"
-    ```
+   ```shell
+   kubectl --namespace $NAMESPACE exec -t \
+     $(kubectl -n$NAMESPACE get pod -oname | \
+       sed -n /\\/$APP_INSTANCE_NAME-postgresql/s.pods\\?/..p) \
+     -c postgresql-server \
+     -- psql -U postgres -c "update pg_database set datallowconn = true where datname = 'unleash';"
+   ```
 
 1. Patch a Secret to restore your database password:
 
@@ -349,11 +381,11 @@ Before you restore the PostgreSQL database, we recommend closing all incoming co
 
 1. Finally, restart the Unleash Pod:
 
-    ```shell
-    kubectl --namespace $NAMESPACE  exec -i $(kubectl -n$NAMESPACE get pod -oname | \
-      sed -n /\\/$APP_INSTANCE_NAME-unleash/s.pods\\?/..p) \
-      -- bash -c "kill -1 1"
-    ```
+   ```shell
+   kubectl --namespace $NAMESPACE  exec -i $(kubectl -n$NAMESPACE get pod -oname | \
+     sed -n /\\/$APP_INSTANCE_NAME-unleash/s.pods\\?/..p) \
+     -- bash -c "kill -1 1"
+   ```
 
 # Uninstalling the Application
 
@@ -427,4 +459,3 @@ delete the cluster using this command:
 ```
 gcloud container clusters delete "$CLUSTER" --zone "$ZONE"
 ```
-
