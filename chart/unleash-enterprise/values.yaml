@@ -15,7 +15,7 @@ postgresql:
 metrics:
   image: gcr.io/bricks-software-public/unleash-enterprise/prometheus-to-sd:latest
   exporter:
-    enabled: flalse
+    enabled: false
 
 deployer:
   image: null
